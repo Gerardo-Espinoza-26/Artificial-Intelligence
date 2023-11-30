@@ -1,0 +1,75 @@
+package Hands_On_11;
+
+public class Gate2 {
+
+    private final DataSet dataSet;
+
+    public Gate2(DataSet dataSet) {
+        this.dataSet = dataSet;
+    }
+    
+    public static final double learningRate = 0.05;
+    public static final double[] initial_weights = {Math.random(), Math.random()};
+    
+    public double calculateWeightedSum(int[] data, double[] weights){
+        double weightedSum = 0;
+        for(int i = 0; i < data.length; i++){
+            weightedSum += data[i] * weights[i];
+        }
+        return weightedSum;
+    }
+    public int applyActivationFunction(double weightedSum){
+        int result = 0;
+        if(weightedSum > 1 ){
+            result = 1;
+        }
+        return result;
+    }
+    public double[] adjustWeights(int[] data, double[] weights, double error){
+        double[] adjustedWeights = new double[weights.length];
+        for(int i = 0; i < weights.length; i++){
+            adjustedWeights[i] = learningRate * error * data[i] + weights[i];
+        }
+        return adjustedWeights;
+    }
+
+    public void Gates2() {
+        int[][][] data = dataSet.getGates();
+        double[] weights = Gate2.initial_weights;
+        boolean errorFlag = true;
+        int epochNumber = 0;
+        double error = 0;
+        double[] adjustedWeights = null;
+
+        while (errorFlag) {
+            printHeading(epochNumber++);
+            errorFlag = false;
+            error = 0;
+
+            for (int i = 0; i < data.length; i++) {
+                double weightedSum = calculateWeightedSum(data[i][0], weights);
+                int result = applyActivationFunction(weightedSum);
+                error = data[i][1][0] - result;
+
+                if (error != 0) {
+                    errorFlag = true;
+                }
+
+                adjustedWeights = adjustWeights(data[i][0], weights, error);
+                printVector(data[i], weights, result, error, weightedSum, adjustedWeights);
+                weights = adjustedWeights;
+            }
+        }
+    }
+    
+    public void printHeading(int epochNumber){
+        System.out.println("\n=== Epoch # " + epochNumber + " ===================================================================================");
+        System.out.println("   w1   |   w2   | x1 | x2 | Target | Result | error | Weighted sum | adjusted w1 | adjusted w2");
+        System.out.println("-------------------------------------------------------------------------------------------------");
+    }
+    
+    public void printVector(int[][] data, double[] weights, int result, double error, double weightedSum, double[] adjustedWeights){
+        System.out.println("  " + String.format("%.2f", weights[0]) + "  |  " + String.format("%.2f", weights[1]) + "  | " + data[0][0] + "  | " + data[0][1] + "  |  " + data[1][0] + "     | " + result + "      | " + error + "   | " + String.format("%.2f", weightedSum) + "         |    " + String.format("%.2f", adjustedWeights[0])+ "     |    " + String.format("%.2f", adjustedWeights[1]));
+    }
+    
+}
